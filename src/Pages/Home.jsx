@@ -1,0 +1,54 @@
+import { useState, useEffect } from "react";
+import { Circles } from "react-loader-spinner";
+import Product from "../ComponentX/Product";
+
+
+
+export default function Home(){
+
+        const [ products, setProducts ] = useState([]);
+        const [loading, setLoading ] = useState(false);
+        const [error, setError ] = useState(null);
+    
+        async function fetchProducts() {
+            setLoading(true);
+            
+            try{
+                const res = await fetch('https://fakestoreapi.com/products');
+                const data = await res.json();
+                setLoading(false);
+                setProducts(data);
+    
+            }catch(e){
+                setError(e);
+                setLoading(false);
+                console.log(e);
+            }
+            
+        }
+        // console.log(products);
+        useEffect(() => {
+            fetchProducts();
+        }, [])
+    
+    return <div>
+        {
+            loading
+             ? <div className="min-h-screen w-full flex justify-center items-center ">
+                <Circles
+                    height={'120'}
+                    width={'120'}
+                    color="rgb(127,29,29)"
+                    visible={true}
+                />
+             </div> 
+             : <div className="min-h-80vh grid sm:grid-cols-2 md:grid-cols-3  lg:grid-cols-4 max-w-6xl mx-auto p-3 ">
+                {
+                    products && products.length 
+                    ? products.map(productItem => <Product key={productItem.id} product={productItem } />) 
+                    :null
+                }
+             </div>
+        }
+    </div>
+}
